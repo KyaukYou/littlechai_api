@@ -4,7 +4,9 @@
  * @LastEditTime: 2020-12-04 16:47:04
  */
 
+const jsonwebtoken = require('jsonwebtoken')
 const User = require('../models/users.js')
+const {secret} = require('../config.js')
 
 class UsersCtl {
     async find(ctx) {
@@ -35,12 +37,25 @@ class UsersCtl {
         // 格式校验
         ctx.verifyParams({
             name: {type: 'string',required: true},
+            password: {type: 'string', required: true, select: false},
             age: {type: 'number',required: false}
         })
-        // db.push(ctx.request.body);
-        // ctx.body = ctx.request.body;
+        const {name} = ctx.request.body;
+        const repeatedUser = await User.findOne({name});
+        if(repeatedUser) {
+            //冲突
+            ctx.throw(409,'用户已经存在');
+        }
         const user = await new User(ctx.request.body).save();
         ctx.body = user;
+    }
+
+    // 判断是不是操作本人帐号
+    async checkOwner(ctx,next) {
+        if(ctx.params.id != ctx.state.user._id) {
+            ctx.throw(403,'没有操作权限')
+        }
+        await next();
     }
 
     async update(ctx) {
@@ -49,7 +64,8 @@ class UsersCtl {
         // }
         // 格式校验
         ctx.verifyParams({
-            name: {type: 'string',required: true},
+            name: {type: 'string',required: false},
+            password: {type: 'string', required: false, select: false},
             age: {type: 'number',required: false}
         })
         // db[ctx.params.id - 0] = ctx.request.body
@@ -76,6 +92,23 @@ class UsersCtl {
         else {
             ctx.status = 204;
         }
+    }
+
+    async login(ctx) {
+        ctx.verifyParams({
+            name: {type: 'string',required: true},
+            password: {type: 'string', required: true},
+        })
+        const user = await User.findOne(ctx.request.body);
+        if(!user) {
+            ctx.throw(401,'用户名或密码不正确')
+        }
+        const {_id, name} = user;
+        const token = jsonwebtoken.sign({
+            _id,name
+        }, secret,{expiresIn: '1d'})
+        // 一天
+        ctx.body = {token};
     }
 }
 
