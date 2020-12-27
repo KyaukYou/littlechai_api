@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/2.2.4/jquery.js"></script>
+</head>
+<body>
+
+  <!-- <form action="/upload" enctype="multipart/form-data" method="POST"> -->
+
+    <input id="image_value" type="file" name="file" accept="image/png,image/jpeg,image/gif">
+    <button id="btn">上传</button>
+    <!-- <button type="submit">上传</button> -->
+
+  <!-- </form> -->
+
+  <script>
+
+    document.getElementById('btn').addEventListener('click',function() {
+      let value = document.getElementById('image_value').files[0];
+      console.log(value)
+      let formData = new FormData();
+      formData.append('file',value);
+      console.log(formData)
+      $.ajax({
+        url: 'http://localhost:3030/upload',
+        data: formData,
+        type: 'post',
+        dataType: 'json',
+        processData : false, // 使数据不做处理
+        contentType : false, // 不要设置Content-Type请求头
+        success(data){
+            console.log(data)
+        }
+    })
+    })
+
+  </script>
+
+</body>
+</html>
