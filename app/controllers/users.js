@@ -22,7 +22,9 @@ class UsersCtl {
         //     ctx.throw(412,'先决条件失败:id大于等于数组长度');
         // }
         // ctx.body = db[ctx.params.id - 0]
-        const user = await User.findById(ctx.params.id)
+        const { fields } = ctx.query;
+        const selectFields = fields.split(';').filter(f => f).map(f => ' +' + f).join('');
+        const user = await User.findById(ctx.params.id).select(selectFields);
         console.log(user)
         if(!user) {
             ctx.throw(404,'用户不存在')
@@ -66,7 +68,15 @@ class UsersCtl {
         ctx.verifyParams({
             name: {type: 'string',required: false},
             password: {type: 'string', required: false, select: false},
-            age: {type: 'number',required: false}
+            avatar_url: {type: 'string',required: false},
+            background_url: {type: 'string',required: false},
+            gender: {type: 'string', required: false},
+            headline: {type: 'string', required: false}, 
+            locations: {type: 'array',itemType: 'string', required: false},
+            business: {type: 'string', required: false},
+            employments: {type: 'array',itemType: 'object', required: false},
+            eduactions: {type: 'array',itemType: 'object', required: false},
+            ownerline: {type: 'string', required: false},
         })
         // db[ctx.params.id - 0] = ctx.request.body
         // ctx.body = ctx.request.body;
