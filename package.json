@@ -1,7 +1,7 @@
 {
-  "name": "gangyu-api",
+  "name": "littlechai_api",
   "version": "1.0.0",
-  "description": "刚宇教育官网API",
+  "description": "小柴随心记2.0API",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

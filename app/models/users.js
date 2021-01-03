@@ -17,21 +17,21 @@ const userSchema = new Schema({
   // 一句话简介
   headline: {type: String},
   // 居住地
-  locations: {type: [{type: String}],select: false},
+  locations: {type: [{type: Schema.Types.ObjectId, ref: 'Diary'}],select: false},
   // 所在行业
-  business: {type: String, select: false},
+  business: {type: Schema.Types.ObjectId, ref: 'Diary', select: false},
   // 职业经历
   employments: {
     type: [{
-      company: {type: String},
-      job: {type: String}
+      company: {type: Schema.Types.ObjectId, ref: 'Diary'},
+      job: {type: Schema.Types.ObjectId, ref: 'Diary'}
     }],select: false
   },
   // 教育经历
   educations: {
     type: [{
-      school: {type: String},
-      major: {type: String},
+      school: {type: Schema.Types.ObjectId, ref: 'Diary'},
+      major: {type: Schema.Types.ObjectId, ref: 'Diary'},
       diploma: {type: Number, enum:[1,2,3,4,5]},
       entrance_year: {type: Number},
       graducation_year: {type: Number}
@@ -39,7 +39,21 @@ const userSchema = new Schema({
     select: false
   },
   // 个人简介
-  ownerline: {type: String, select: false}
+  ownerline: {type: String, select: false},
+
+
+  //关注用户
+  following: {
+    type: [{type: Schema.Types.ObjectId, ref: 'User'}],
+    select: false
+  },
+
+  //关注日记
+  followingDiary: {
+    type: [{type: Schema.Types.ObjectId, ref: 'Diary'}],
+    select: false
+  }
+
 })
 
 module.exports = model('User',userSchema);
