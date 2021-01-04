@@ -7,6 +7,7 @@
 const jsonwebtoken = require('jsonwebtoken')
 const User = require('../models/users.js')
 const Article = require('../models/article.js')
+const Answer = require('../models/answer.js')
 const {secret} = require('../config.js')
 
 class UsersCtl {
@@ -235,6 +236,120 @@ class UsersCtl {
     async listArticle(ctx) {
         const article = await Article.find({articler: ctx.params.id});
         ctx.body = article;
+    }
+
+
+    // 获取点赞列表
+    async listLikingAnswers(ctx) {
+        const user = await User.findById(ctx.params.id).select('+likingAnswers').populate('likingAnswers');
+        if(!user) {
+            ctx.throw(404,'用户不存在')
+        }
+        else {
+            ctx.body = user.likingAnswers;
+        }
+    }
+
+
+    // 点赞答案
+    async  likeAnswer(ctx,next) {
+        const me = await User.findById(ctx.state.user._id).select('+likingAnswers');
+        if(!me.likingAnswers.map(id => id.toString()).includes(ctx.params.id)) {
+            me.likingAnswers.push(ctx.params.id)
+            me.save();
+            await Answer.findByIdAndUpdate(ctx.params.id, {$inc: {voteCount: 1}})
+        }
+        ctx.status = 204;
+        await next();
+    }
+
+
+    // 取消点赞答案
+    async  unlikeAnswer(ctx) {
+        const me = await User.findById(ctx.state.user._id).select('+likingAnswers');
+        const index = me.likingAnswers.map(id => id.toString()).indexOf(ctx.params.id);
+        if(!index > -1) {
+            me.likingAnswers.splice(index,1)
+            me.save();
+            await Answer.findByIdAndUpdate(ctx.params.id, {$inc: {voteCount: -1}})
+        }
+        ctx.status = 204;
+        
+    }
+
+    // 获取踩列表
+    async listDislikingAnswers(ctx) {
+        const user = await User.findById(ctx.params.id).select('+dislikingAnswers').populate('dislikingAnswers');
+        if(!user) {
+            ctx.throw(404,'用户不存在')
+        }
+        else {
+            ctx.body = user.dislikingAnswers;
+        }
+    }
+
+    // 踩答案
+    async  dislikeAnswer(ctx,next) {
+        const me = await User.findById(ctx.state.user._id).select('+dislikingAnswers');
+        if(!me.dislikingAnswers.map(id => id.toString()).includes(ctx.params.id)) {
+            me.dislikingAnswers.push(ctx.params.id)
+            me.save();
+            // await Answer.findByIdAndUpdate(ctx.params.id, {$inc: {voteCount: 1}})
+        }
+        ctx.status = 204;
+        await next();
+    }
+
+
+    // 取消踩答案
+    async  undislikeAnswer(ctx) {
+        const me = await User.findById(ctx.state.user._id).select('+dislikingAnswers');
+        const index = me.dislikingAnswers.map(id => id.toString()).indexOf(ctx.params.id);
+        if(!index > -1) {
+            me.dislikingAnswers.splice(index,1)
+            me.save();
+            // await Answer.findByIdAndUpdate(ctx.params.id, {$inc: {voteCount: -1}})
+        }
+        ctx.status = 204;
+        
+    }
+
+
+    // 获取收藏列表
+    async listCollectingAnswers(ctx) {
+        const user = await User.findById(ctx.params.id).select('+collectingAnswers').populate('collectingAnswers');
+        if(!user) {
+            ctx.throw(404,'用户不存在')
+        }
+        else {
+            ctx.body = user.collectingAnswers;
+        }
+    }
+
+    // 收藏答案
+    async  collectAnswer(ctx,next) {
+        const me = await User.findById(ctx.state.user._id).select('+collectingAnswers');
+        if(!me.collectingAnswers.map(id => id.toString()).includes(ctx.params.id)) {
+            me.collectingAnswers.push(ctx.params.id)
+            me.save();
+            // await Answer.findByIdAndUpdate(ctx.params.id, {$inc: {voteCount: 1}})
+        }
+        ctx.status = 204;
+        await next();
+    }
+
+
+    // 取消收藏答案
+    async  unCollectAnswer(ctx) {
+        const me = await User.findById(ctx.state.user._id).select('+collectingAnswers');
+        const index = me.collectingAnswers.map(id => id.toString()).indexOf(ctx.params.id);
+        if(!index > -1) {
+            me.collectingAnswers.splice(index,1)
+            me.save();
+            // await Answer.findByIdAndUpdate(ctx.params.id, {$inc: {voteCount: -1}})
+        }
+        ctx.status = 204;
+        
     }
 
 }

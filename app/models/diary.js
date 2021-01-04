@@ -7,7 +7,7 @@ const diarySchema = new Schema({
   name: {type: String, required: true},
   avatar_url: {type: String, required: false},
   introduction: {type: String, select: false, required: false}
-})
+},{timestamps: true})
 
 module.exports = model('Diary',diarySchema);
 

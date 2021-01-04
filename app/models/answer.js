@@ -1,0 +1,19 @@
+/*
+ * @Author: LittleChai
+ * @Date: 2021-01-04 12:00:47
+ * @LastEditTime: 2021-01-04 12:20:21
+ */
+const mongoose = require('mongoose');
+
+const {Schema, model} = mongoose;
+
+const answerSchema = new Schema({
+  __v: {type: Number, select: false},
+  content: {type: String, required: true},
+  answerer: {type: Schema.Types.ObjectId, ref: 'User', select: false, required: true},
+  articleId: {type: String, required: true},
+  voteCount: {type: Number, required: true, default: 0}
+},{timestamps: true})
+
+module.exports = model('Answer',answerSchema);
+

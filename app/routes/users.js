@@ -9,8 +9,13 @@ const Router = require('koa-router');
 const router = new Router({
     prefix: '/users'
 });
-const {find,findById,create,update,delete:del,login,checkOwner,listFollowing,follow,unfollow,listFollowers,checkUserExist,followDiary,unfollowDiary,listFollowingDiary,listArticle} = require('../controllers/users.js')
+const {
+    find,findById,create,update,delete:del,login,checkOwner,listFollowing,follow,unfollow,listFollowers,checkUserExist,followDiary,unfollowDiary,listFollowingDiary,listArticle,
+    listLikingAnswers,listDislikingAnswers,likeAnswer,unlikeAnswer,dislikeAnswer,undislikeAnswer,
+    listCollectingAnswers,collectAnswer,unCollectAnswer
+} = require('../controllers/users.js')
 const {checkDiaryExist} = require('../controllers/diary.js')
+const {checkAnswerExist} = require('../controllers/answer.js')
 
 const {secret} = require('../config.js');
 
@@ -74,5 +79,35 @@ router.get('/:id/followingDiary', listFollowingDiary);
 
 //获取用户文章列表
 router.get('/:id/article', listArticle);
+
+
+//获取用户喜欢的答案列表
+router.get('/:id/likingAnswers', listLikingAnswers);
+
+// 点赞答案
+router.put('/likingAnswers/:id', auth,checkAnswerExist, likeAnswer,undislikeAnswer)
+
+// 取消点赞答案
+router.delete('/likingAnswers/:id', auth,checkAnswerExist, unlikeAnswer)
+
+//获取用户踩的答案列表
+router.get('/:id/dislikingAnswers', listDislikingAnswers);
+
+// 踩答案
+router.put('/dislikingAnswers/:id', auth,checkAnswerExist, dislikeAnswer,unlikeAnswer)
+
+// 取消踩答案
+router.delete('/dislikingAnswers/:id', auth,checkAnswerExist, undislikeAnswer)
+
+
+//获取用户收藏的答案列表
+router.get('/:id/collectingAnswers', listCollectingAnswers);
+
+// 收藏答案
+router.put('/collectingAnswers/:id', auth,checkAnswerExist, collectAnswer)
+
+// 取消收藏答案
+router.delete('/collectingAnswers/:id', auth,checkAnswerExist, unCollectAnswer)
+
 
 module.exports = router;

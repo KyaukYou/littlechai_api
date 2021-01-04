@@ -9,7 +9,7 @@ const articleSchema = new Schema({
   avatar_url: {type: String, required: false},
   articler: {type: Schema.Types.ObjectId, ref: 'User', select: false, required: true},
   diary: {type: [{type: Schema.Types.ObjectId, ref: 'Article'}],select: false}
-})
+},{timestamps: true})
 
 module.exports = model('Article',articleSchema);
 
